@@ -16,6 +16,7 @@ from scipy.optimize import minimize
 mndata = MNIST("Images")
 
 X, y = mndata.load_training() #get x(images) and y(labels)
+Xtest, ytest = mndata.load_testing()
 
 # X = X[0:10000]
 # y = y[0:10000]
@@ -151,14 +152,26 @@ with open("Saved/loggradients.csv","w+") as my_csv:
     csvWriter = csv.writer(my_csv,delimiter=',')
     csvWriter.writerows(all_theta)
 
-#finally, we see how accurate it is
+#finally, we see how accurate it is with the test set
 
-print(len(all_theta))
-print(len(all_theta[0]))
+for p in Xtest:
+    p.insert(0, 1)
+
+np_Xtest = np.array(Xtest)
+np_ytest = np.array(ytest)
+
+#normalizes features from the test set
+
+norm_Xtest = []
+
+for i in range(len(norm_Xtest)):
+    norm_Xtest.append(normalizeFeatures(norm_Xtest[i])[0])
+
+norm_Xtest = np.array(norm_Xtest) #convert into numpy array
 
 correct = 0
 iterator = 0
-for example in norm_X:
+for example in norm_Xtest:
     values = np.dot(example, all_theta.transpose())
     number = -1
     biggest = -1000000000
@@ -167,11 +180,11 @@ for example in norm_X:
             biggest = values[p]
             number = p
 
-    if number == np_Y[iterator][0]:
+    if number == np_ytest[iterator][0]:
         correct += 1
     iterator += 1
 
-print("number correct: " + str(correct / len(norm_X)))
+print("number correct: " + str(correct / len(norm_Xtest)))
 
 
 
